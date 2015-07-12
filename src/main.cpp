@@ -1,4 +1,5 @@
 #include "main.h"
+#include "cvar.h"
 
 vgui::ISystem*       g_pSystem;
 IVEngineClient*      g_pEngineClient;
@@ -81,11 +82,16 @@ bool PluginImpl::Load(CreateInterfaceFn interfaceFactory, CreateInterfaceFn game
         Msg("Failed to initialize Cvar interface\n");
         return false;
     }
+    if (!register_cvars()) {
+        Msg("Failed to register cvars\n");
+        return false;
+    }
     Msg(OPENPREC_NAME " loaded!\n");
     return true;
 }
 
 void PluginImpl::Unload() {
+    unregister_cvars();
 }
 
 void PluginImpl::Pause() {}

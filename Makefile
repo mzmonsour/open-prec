@@ -10,7 +10,9 @@ CPPFLAGS=$(FLAGS) -std=c++11 $(DEFINES) -I$(APIDIR)/common -I$(APIDIR)/public -I
 LDFLAGS=$(FLAGS) -shared -L$(APIDIR)/lib/public/linux32
 LDLIBS=-lvstdlib -ltier0 -l:tier1.a
 
-SRCS=src/main.cpp
+SRCS=src/main.cpp\
+	src/cvar.cpp\
+
 OBJS=$(subst .cpp,.o,$(SRCS))
 TARGET=open-prec.so
 
