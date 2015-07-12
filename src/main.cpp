@@ -1,5 +1,11 @@
 #include "main.h"
 
+vgui::ISystem*       g_pSystem;
+IVEngineClient*      g_pEngineClient;
+IGameEventManager2*  g_pEventManager;
+IFileSystem*         g_pFileSystem;
+ICvar*               g_pCVar;
+
 class PluginImpl: public IServerPluginCallbacks {
     public:
 
@@ -50,6 +56,31 @@ PluginImpl::~PluginImpl() {
 }
 
 bool PluginImpl::Load(CreateInterfaceFn interfaceFactory, CreateInterfaceFn gameServerFactory) {
+    g_pSystem = static_cast<vgui::ISystem*>(interfaceFactory(VGUI_SYSTEM_INTERFACE_VERSION, NULL));
+    if (g_pSystem == nullptr) {
+        Msg("Failed to initialize VGUI System interface\n");
+        return false;
+    }
+    g_pEngineClient = static_cast<IVEngineClient*>(interfaceFactory(VENGINE_CLIENT_INTERFACE_VERSION, NULL));
+    if (g_pEngineClient == nullptr) {
+        Msg("Failed to initialize Client Engine interface\n");
+        return false;
+    }
+    g_pEventManager = static_cast<IGameEventManager2*>(interfaceFactory(INTERFACEVERSION_GAMEEVENTSMANAGER2, NULL));
+    if (g_pEventManager == nullptr) {
+        Msg("Failed to initialize Game Event interface\n");
+        return false;
+    }
+    g_pFileSystem = static_cast<IFileSystem*>(interfaceFactory(FILESYSTEM_INTERFACE_VERSION, NULL));
+    if (g_pFileSystem == nullptr) {
+        Msg("Failed to initialize Filesystem interface\n");
+        return false;
+    }
+    g_pCVar = static_cast<ICvar*>(interfaceFactory(CVAR_INTERFACE_VERSION, NULL));
+    if (g_pCVar == nullptr) {
+        Msg("Failed to initialize Cvar interface\n");
+        return false;
+    }
     Msg(OPENPREC_NAME " loaded!\n");
     return true;
 }
