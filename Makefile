@@ -12,6 +12,7 @@ LDLIBS=-lvstdlib -ltier0 -l:tier1.a
 
 SRCS=src/main.cpp\
 	src/cvar.cpp\
+	src/sound.cpp\
 
 OBJS=$(subst .cpp,.o,$(SRCS))
 TARGET=open-prec.so

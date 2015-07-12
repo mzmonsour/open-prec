@@ -1,5 +1,6 @@
 #include "main.h"
 #include "cvar.h"
+#include "sound.h"
 
 vgui::ISystem*       g_pSystem;
 IVEngineClient*      g_pEngineClient;
@@ -90,6 +91,10 @@ bool PluginImpl::Load(CreateInterfaceFn interfaceFactory, CreateInterfaceFn game
     }
     if (!register_concommands()) {
         Msg("Failed to register ConCommands\n");
+        return false;
+    }
+    if (!load_sound_table()) {
+        Msg("Failed to load sound table\n");
         return false;
     }
     Msg(OPENPREC_NAME " loaded!\n");
