@@ -1,6 +1,7 @@
 #include <icvar.h>
 #include "main.h"
 #include "cvar.h"
+#include "sound.h"
 
 /*
  * Define ConVars
@@ -63,7 +64,7 @@ ConVar prec_dir("prec_dir", "/home/matt/", FCVAR_ARCHIVE,
         "Directory to store demos in (unimplemented)");
 
 ConVar prec_sound("prec_sound", "1", FCVAR_ARCHIVE,
-        "Play sounds when starting/stopping recording (unimplemented)\n"
+        "Play sounds when starting/stopping recording\n"
         "\t0 - Off\n"
         "\t1 - On");
 
@@ -127,6 +128,11 @@ static const int g_numCommands = 5;
 extern ConCommand *g_commandList[g_numCommands];
 
 CON_COMMAND(prec_about, "Display useful information about the plugin") {
+    Msg("%s\n%s\n%s\n",
+        OPENPREC_NAME " is an open-source demo recording tool for TF2",
+        "Version: " OPENPREC_VERSION, "Author: " OPENPREC_AUTH
+    );
+    play_sound(Sound::About);
 }
 
 CON_COMMAND(prec_info, "List commands and cvars") {
