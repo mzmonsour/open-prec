@@ -136,6 +136,19 @@ CON_COMMAND(prec_about, "Display useful information about the plugin") {
 }
 
 CON_COMMAND(prec_info, "List commands and cvars") {
+    ConCommand *help = g_pCVar->FindCommand("help");
+    const char *argv[2];
+    argv[0] = "help";
+    for (int i = 0; i < g_numCommands; ++i) {
+        argv[1] = g_commandList[i]->GetName();
+        CCommand args(2, argv);
+        help->Dispatch(args);
+    }
+    for (int i = 0; i < g_numCvars; ++i) {
+        argv[1] = g_cvarList[i]->GetName();
+        CCommand args(2, argv);
+        help->Dispatch(args);
+    }
 }
 
 CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
