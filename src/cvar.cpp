@@ -108,6 +108,47 @@ static ConVar *g_cvarList[] = {
     &prec_tag
 };
 
+/*
+ * Define ConCommands
+ *
+ * Note:
+ *  
+ *  CON_COMMAND(name, ...) expands to the following
+ *      
+ *      static ConCommand name##_command(...) // Variable
+ *      static void name(...) { ... } // Function
+ *
+ *  First argument passed can safely be assumed to be garbage
+ *  Probably a legacy thing, because no built in convars read
+ *  the first arg anyways
+ */
+
+static const int g_numCommands = 5;
+extern ConCommand *g_commandList[g_numCommands];
+
+CON_COMMAND(prec_about, "Display useful information about the plugin") {
+}
+
+CON_COMMAND(prec_info, "List commands and cvars") {
+}
+
+CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
+}
+
+CON_COMMAND(prec_mark, "Make a bookmark at the current tick") {
+}
+
+CON_COMMAND(prec_delete_demo, "Delete previous demo") {
+}
+
+ConCommand *g_commandList[g_numCommands] = {
+    &prec_about_command,
+    &prec_info_command,
+    &prec_record_command,
+    &prec_mark_command,
+    &prec_delete_demo_command
+};
+
 bool register_cvars() {
     for (int i = 0; i < g_numCvars; ++i) {
         g_pCVar->RegisterConCommand(g_cvarList[i]);
@@ -118,5 +159,18 @@ bool register_cvars() {
 void unregister_cvars() {
     for (int i = 0; i < g_numCvars; ++i) {
         g_pCVar->UnregisterConCommand(g_cvarList[i]);
+    }
+}
+
+bool register_concommands() {
+    for (int i = 0; i < g_numCommands; ++i) {
+        g_pCVar->RegisterConCommand(g_commandList[i]);
+    }
+    return true;
+}
+
+void unregister_concommands() {
+    for (int i = 0; i < g_numCommands; ++i) {
+        g_pCVar->UnregisterConCommand(g_commandList[i]);
     }
 }

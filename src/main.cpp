@@ -86,12 +86,17 @@ bool PluginImpl::Load(CreateInterfaceFn interfaceFactory, CreateInterfaceFn game
         Msg("Failed to register cvars\n");
         return false;
     }
+    if (!register_concommands()) {
+        Msg("Failed to register ConCommands\n");
+        return false;
+    }
     Msg(OPENPREC_NAME " loaded!\n");
     return true;
 }
 
 void PluginImpl::Unload() {
     unregister_cvars();
+    unregister_concommands();
 }
 
 void PluginImpl::Pause() {}

@@ -4,4 +4,7 @@
 bool register_cvars();
 void unregister_cvars();
 
+bool register_concommands();
+void unregister_concommands();
+
 #endif
