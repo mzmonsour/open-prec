@@ -26,4 +26,19 @@ extern IGameEventManager2*  g_pEventManager;
 extern IFileSystem*         g_pFileSystem;
 extern ICvar*               g_pCVar;
 
+enum struct Class {
+    Null,
+    Scout,
+    Soldier,
+    Pyro,
+    Demo,
+    Heavy,
+    Engi,
+    Medic,
+    Sniper,
+    Spy
+};
+
+extern Class g_localPlayerClass;
+
 #endif

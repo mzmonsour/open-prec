@@ -7,6 +7,8 @@ IGameEventManager2*  g_pEventManager;
 IFileSystem*         g_pFileSystem;
 ICvar*               g_pCVar;
 
+Class g_localPlayerClass = Class::Null;
+
 class PluginImpl: public IServerPluginCallbacks {
     public:
 
