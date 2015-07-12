@@ -1,0 +1,6 @@
+# Binary files
+*.o
+*.so
+
+# Vim swapfiles
+.*.swp
