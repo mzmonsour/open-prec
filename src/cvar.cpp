@@ -126,9 +126,9 @@ static ConVar *g_cvarList[] = {
  * Define ConCommands
  *
  * Note:
- *  
+ *
  *  CON_COMMAND(name, ...) expands to the following
- *      
+ *
  *      static ConCommand name##_command(...) // Variable
  *      static void name(...) { ... } // Function
  *
