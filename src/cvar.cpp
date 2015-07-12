@@ -42,15 +42,28 @@ ConVar prec_next_demoname("prec_next_demoname", "", FCVAR_ARCHIVE,
 
 ConVar prec_notify("prec_notify", "1", FCVAR_ARCHIVE,
         "Where to log notifications (started/stopped recording, bookmarks, etc.)\n"
-        "\t0 - Log to console (unimplemented)\n"
-        "\t1 - Log to team chat (unimplemented)\n"
+        "\t0 - Log to console\n"
+        "\t1 - Log to team chat\n"
         "\t2 - Display on HUD (unimplemented)");
+
+enum struct PrecNotify {
+    Console,
+    Chat,
+    Hud
+};
 
 ConVar prec_mode("prec_mode", "2", FCVAR_ARCHIVE,
         "\t0 - Turn off addon\n"
         "\t1 - Record only custom named demos\n"
         "\t2 - Record on servers with mp_tournament 1\n"
         "\t3 - Always record");
+
+enum struct PrecMode {
+    Off,
+    Named,
+    Tournament,
+    Always
+};
 
 ConVar prec_min_streak("prec_min_streak", "4", FCVAR_ARCHIVE,
         "Minimum killstreak to log (unimplemented)",
@@ -151,7 +164,62 @@ CON_COMMAND(prec_info, "List commands and cvars") {
     }
 }
 
+#define RECORD_NOTIFICATION "**RECORDING STARTED**"
 CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
+    ConCommand *record = g_pCVar->FindCommand("record");
+    int mp_tournament = g_pCVar->FindVar("mp_tournament")->GetInt();
+    int mode = prec_mode.GetInt();
+    const char *argv[2];
+    const char *nextdemoname = prec_next_demoname.GetString();
+    const char *basedir;
+    const char *tag;
+    const char *bluteam;
+    const char *redteam;
+    char mapname[256];
+    argv[0] = "record";
+    switch (static_cast<PrecMode>(mode)) {
+        case PrecMode::Off: return;
+        case PrecMode::Named: {
+            if (strcmp(nextdemoname, "") == 0) return;
+        } break;
+        case PrecMode::Tournament: {
+            if (mp_tournament != 1) return;
+        } break;
+        case PrecMode::Always: break;
+        default: {
+            ConNotify("Invalid recording mode, doing nothing");
+            return;
+        }
+    }
+    basedir = prec_dir.GetString();
+    tag = prec_tag.GetString();
+    bluteam = g_pCVar->FindVar("mp_tournament_blueteamname")->GetString();
+    redteam = g_pCVar->FindVar("mp_tournament_redteamname")->GetString();
+    g_pEngineClient->GetChapterName(mapname, sizeof(mapname));
+    if (strcmp(nextdemoname, "") == 0) {
+        // TODO: Custom name formatting
+        nextdemoname = "foobar_demo";
+    }
+    argv[1] = nextdemoname;
+    record->Dispatch(CCommand(2, argv));
+    if (g_pEngineClient->IsRecordingDemo()) {
+        int notify = prec_notify.GetInt();
+        ConNotify(RECORD_NOTIFICATION);
+        play_sound(Sound::Recording);
+        if (mp_tournament == 1) {
+            switch (static_cast<PrecNotify>(notify)) {
+                default:
+                case PrecNotify::Console:
+                    break;
+                case PrecNotify::Chat: {
+                    g_pEngineClient->ClientCmd("say_team [" OPENPREC_NAME "]: " RECORD_NOTIFICATION);
+                } break;
+                case PrecNotify::Hud: {
+                    ConNotifyf(OPENPREC_NOFEATURE_MSGF, "Hud notifications");
+                } break;
+            }
+        }
+    }
 }
 
 CON_COMMAND(prec_mark, "Make a bookmark at the current tick") {
