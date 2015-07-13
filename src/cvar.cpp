@@ -82,10 +82,17 @@ ConVar prec_screens("prec_screens", "0", FCVAR_ARCHIVE,
         "\t1 - On");
 
 ConVar prec_log("prec_log", "1", FCVAR_ARCHIVE,
-        "\t0 - Don't log killstreaks or bookmarks (unimplemented)\n"
-        "\t1 - Log killstreaks and bookmarks to killstreaks.txt (unimplemented)\n"
-        "\t2 - Log separately for each demo (unimplemented)\n"
-        "\t3 - Log separately for each map (unimplemented)");
+        "\t0 - Don't log killstreaks or bookmarks\n"
+        "\t1 - Log killstreaks and bookmarks to killstreaks.txt\n"
+        "\t2 - Log separately for each demo\n"
+        "\t3 - Log separately for each map");
+
+enum struct LogMode {
+    Dont,
+    Global,
+    PerDemo,
+    PerMap
+};
 
 ConVar prec_delete_useless_demo("prec_delete_useless_demo", "0", FCVAR_ARCHIVE,
         "Delete demo files without killstreaks or bookmarks (unimplemented)\n"
@@ -197,7 +204,7 @@ std::string parse_demoname( const char *fmt, const char *tag, const char *date,
 #else
 #define PATH_SEPARATOR '/'
 #endif
-std::string create_demo_path(const char *dir, const char *name) {
+std::string create_file_path(const char *dir, const char *name) {
     std::ostringstream path;
     // Don't worry about multiple separators, most systems will happily ignore them
     path << dir << PATH_SEPARATOR << name;
@@ -265,7 +272,7 @@ CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
         fallbackname = parse_demoname(demonamefmt, tag, datetime, mapname, bluteam, redteam);
         nextdemoname = fallbackname.c_str();
     }
-    filepath = create_demo_path(basedir, nextdemoname);
+    filepath = create_file_path(basedir, nextdemoname);
     argv[1] = filepath.c_str();
     record->Dispatch(CCommand(2, argv));
     if (g_pEngineClient->IsRecordingDemo()) {
@@ -296,7 +303,79 @@ CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
     }
 }
 
+enum struct Mark {
+    Killstreak,
+    Bookmark,
+};
+
+#define LOGNAME "killstreaks.txt"
+void prec_log_mark(const Mark type, const int tick, const int kills) {
+    time_t posixtime;
+    tm *timeinfo;
+    FileHandle_t logfile = NULL;
+    int logmode = prec_log.GetInt();
+    int datetimelen;
+    const char *basedir = prec_dir.GetString();
+    char datetime[256];
+    std::ostringstream pathbuf;
+    std::ostringstream tickstrbuf;
+    std::ostringstream killstrbuf;
+    std::string tickstr;
+    std::string killstr;
+    std::string path, fullpath;
+    switch (static_cast<LogMode>(logmode)) {
+        default:
+        case LogMode::Dont: return;
+        case LogMode::Global: {
+            path = LOGNAME;
+        } break;
+        case LogMode::PerDemo: {
+            pathbuf << g_pDemoInfo->filename << "_" << LOGNAME;
+            path = pathbuf.str();
+        } break;
+        case LogMode::PerMap: {
+            pathbuf << g_pDemoInfo->mapname << "_" << LOGNAME;
+            path = pathbuf.str();
+        } break;
+    }
+    fullpath = create_file_path(basedir, path.c_str());
+    logfile = g_pFileSystem->Open(fullpath.c_str(), "a");
+    if (logfile != NULL) {
+        time(&posixtime);
+        timeinfo = localtime(&posixtime);
+        datetimelen = strftime(datetime, sizeof(datetime), "[%F %T]: ", timeinfo);
+        tickstrbuf << tick;
+        tickstr = tickstrbuf.str();
+        killstrbuf << kills;
+        killstr = killstrbuf.str();
+        g_pFileSystem->Write(datetime, datetimelen, logfile);
+        switch (type) {
+            case Mark::Killstreak: {
+                ConMarkf("Killstreak (%i kills) @%i in %s", kills, tick, g_pDemoInfo->filename.c_str());
+                g_pFileSystem->Write("Killstreak (", 12, logfile);
+                g_pFileSystem->Write(killstr.c_str(), killstr.length(), logfile);
+                g_pFileSystem->Write(" kills) @", 9, logfile);
+            } break;
+            case Mark::Bookmark: {
+                ConMarkf("%s%i in %s", "Bookmark @", tick, g_pDemoInfo->filename.c_str());
+                g_pFileSystem->Write("Bookmark @", 10, logfile);
+            } break;
+        }
+        g_pFileSystem->Write(tickstr.c_str(), tickstr.length(), logfile);
+        g_pFileSystem->Write(" in ", 4, logfile);
+        g_pFileSystem->Write(g_pDemoInfo->filename.c_str(), g_pDemoInfo->filename.length(), logfile);
+        g_pFileSystem->Write("\n", 1, logfile);
+        g_pFileSystem->Close(logfile);
+        logfile = NULL;
+    } else {
+        ConNotifyf("%s", "Could not open log file for writing!");
+    }
+}
+
 CON_COMMAND(prec_mark, "Make a bookmark at the current tick") {
+    if (g_pEngineClient->IsRecordingDemo() && g_demoIsInternal) {
+        prec_log_mark(Mark::Bookmark, g_pEngineClient->GetDemoRecordingTick(), -1);
+    }
 }
 
 CON_COMMAND(prec_delete_demo, "Delete previous demo") {
