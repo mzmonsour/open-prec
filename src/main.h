@@ -62,5 +62,6 @@ extern std::unique_ptr<DemoInfo>    g_pDemoInfo,
                                     g_pPrevDemoInfo;
 
 extern bool g_demoIsInternal;
+extern bool g_roundIsActive;
 
 #endif

@@ -26,6 +26,7 @@ std::unique_ptr<DemoInfo> g_pDemoInfo(nullptr);
 std::unique_ptr<DemoInfo> g_pPrevDemoInfo(nullptr);;
 
 bool g_demoIsInternal = false;
+bool g_roundIsActive = false;
 
 class PluginImpl: public IServerPluginCallbacks {
     public:
@@ -147,6 +148,7 @@ void PluginImpl::GameFrame(bool simulating) {
 }
 
 void PluginImpl::LevelShutdown() {
+    g_roundIsActive = false;
     if (g_pEngineClient->IsRecordingDemo() && g_demoIsInternal) {
         ConCommand *stop = g_pCVar->FindCommand("stop");
         const char *argv[1] = {"stop"};

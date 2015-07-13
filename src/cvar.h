@@ -21,7 +21,9 @@ void unregister_concommands();
 
 extern ConVar   prec_sound,
                 prec_mode,
-                prec_screens;
+                prec_screens,
+                prec_min_streak,
+                prec_kill_delay;
 
 enum struct PrecMode {
     Off,
@@ -30,7 +32,14 @@ enum struct PrecMode {
     Always
 };
 
+enum struct Mark {
+    Killstreak,
+    Bookmark,
+};
+
 void prec_record(const CCommand& args);
 void prec_auto_record();
+
+void prec_log_mark(const Mark type, const int tick, const int kills);
 
 #endif

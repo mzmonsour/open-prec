@@ -61,11 +61,11 @@ ConVar prec_mode("prec_mode", "2", FCVAR_ARCHIVE,
         "\t3 - Always record");
 
 ConVar prec_min_streak("prec_min_streak", "4", FCVAR_ARCHIVE,
-        "Minimum killstreak to log (unimplemented)",
+        "Minimum killstreak to log",
         true, 2.0, false, 0);
 
 ConVar prec_kill_delay("prec_kill_delay", "15", FCVAR_ARCHIVE,
-        "Max delay between kills in a killstreak (unimplemented)",
+        "Max delay between kills in a killstreak",
         true, 5.0, false, 0);
 
 ConVar prec_dir("prec_dir", "", FCVAR_ARCHIVE,
@@ -302,11 +302,6 @@ CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
         }
     }
 }
-
-enum struct Mark {
-    Killstreak,
-    Bookmark,
-};
 
 #define LOGNAME "killstreaks.txt"
 void prec_log_mark(const Mark type, const int tick, const int kills) {
