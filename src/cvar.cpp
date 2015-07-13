@@ -1,4 +1,6 @@
 #include <icvar.h>
+#include <string>
+#include <sstream>
 #include "main.h"
 #include "cvar.h"
 #include "sound.h"
@@ -38,7 +40,7 @@ static ConVar prec_version("prec_version", OPENPREC_VERSION, FCVAR_NONE,
         "The current version of open-prec");
 
 ConVar prec_next_demoname("prec_next_demoname", "", FCVAR_NONE,
-        "Name of the next demo (unimplemented)");
+        "Name of the next demo");
 
 ConVar prec_notify("prec_notify", "1", FCVAR_ARCHIVE,
         "Where to log notifications (started/stopped recording, bookmarks, etc.)\n"
@@ -67,7 +69,7 @@ ConVar prec_kill_delay("prec_kill_delay", "15", FCVAR_ARCHIVE,
         true, 5.0, false, 0);
 
 ConVar prec_dir("prec_dir", "/home/matt/", FCVAR_ARCHIVE,
-        "Directory to store demos in (unimplemented)");
+        "Directory to store demos in");
 
 ConVar prec_sound("prec_sound", "1", FCVAR_ARCHIVE,
         "Play sounds when starting/stopping recording\n"
@@ -96,7 +98,7 @@ ConVar prec_stv_status("prec_stv_status", "0", FCVAR_ARCHIVE,
         "\t1 - On");
 
 ConVar prec_tag("prec_tag", "", FCVAR_ARCHIVE,
-        "Tag for demo file name (unimplemented)");
+        "Tag for demo file name");
 
 static const int g_numCvars = 13;
 static ConVar *g_cvarList[] = {
@@ -157,8 +159,55 @@ CON_COMMAND(prec_info, "List commands and cvars") {
     }
 }
 
+std::string parse_demoname( const char *fmt, const char *tag, const char *date,
+                            const char *map, const char *blu, const char *red) {
+    char ch;
+    bool escape = false;
+    std::ostringstream fmtbuf, demoname;
+    std::string fmtword;
+    while ((ch = *fmt++) != 0) {
+        if (ch == '%') {
+            if (escape) {
+                fmtword = fmtbuf.str();
+                fmtbuf.str(std::string());
+                if (fmtword == "tag") {
+                    demoname << tag;
+                } else if (fmtword == "date") {
+                    demoname << date;
+                } else if (fmtword == "map") {
+                    demoname << map;
+                } else if (fmtword == "blu") {
+                    demoname << blu;
+                } else if (fmtword == "red") {
+                    demoname << red;
+                }
+            }
+            escape = !escape;
+        } else if (escape) {
+            fmtbuf << ch;
+        } else {
+            demoname << ch;
+        }
+    }
+    return demoname.str();
+}
+
+#ifdef _WIN32
+#define PATH_SEPARATOR '\\'
+#else
+#define PATH_SEPARATOR '/'
+#endif
+std::string create_demo_path(const char *dir, const char *name) {
+    std::ostringstream path;
+    // Don't worry about multiple separators, most systems will happily ignore them
+    path << dir << PATH_SEPARATOR << name;
+    return path.str();
+}
+
 #define RECORD_NOTIFICATION "**RECORDING STARTED**"
 CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
+    time_t posixtime;
+    tm *timeinfo;
     ConCommand *record = g_pCVar->FindCommand("record");
     int mp_tournament = g_pCVar->FindVar("mp_tournament")->GetInt();
     int mode = prec_mode.GetInt();
@@ -169,6 +218,9 @@ CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
     const char *bluteam;
     const char *redteam;
     char mapname[256];
+    char datetime[256];
+    std::string fallbackname;
+    std::string filepath;
     argv[0] = "record";
     switch (static_cast<PrecMode>(mode)) {
         case PrecMode::Off: return;
@@ -188,12 +240,25 @@ CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
     tag = prec_tag.GetString();
     bluteam = g_pCVar->FindVar("mp_tournament_blueteamname")->GetString();
     redteam = g_pCVar->FindVar("mp_tournament_redteamname")->GetString();
+    time(&posixtime);
+    timeinfo = localtime(&posixtime);
+    strftime(datetime, sizeof(datetime), "%F", timeinfo);
+    datetime[sizeof(datetime) - 1] = 0;
     g_pEngineClient->GetChapterName(mapname, sizeof(mapname));
-    if (strcmp(nextdemoname, "") == 0) {
-        // TODO: Custom name formatting
-        nextdemoname = "foobar_demo";
+    for (int i = 0; i < sizeof(mapname); ++i) {
+        if (mapname[i] == ' ') {
+            mapname[i] = 0;
+            break;
+        }
     }
-    argv[1] = nextdemoname;
+    if (strcmp(nextdemoname, "") == 0) {
+        // TODO: Read custom format string
+        const char *demonamefmt = "%date%_%map%_%red%_%blu%_%tag%";
+        fallbackname = parse_demoname(demonamefmt, tag, datetime, mapname, bluteam, redteam);
+        nextdemoname = fallbackname.c_str();
+    }
+    filepath = create_demo_path(basedir, nextdemoname);
+    argv[1] = filepath.c_str();
     record->Dispatch(CCommand(2, argv));
     if (g_pEngineClient->IsRecordingDemo()) {
         int notify = prec_notify.GetInt();
