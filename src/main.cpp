@@ -11,6 +11,20 @@ ICvar*               g_pCVar;
 
 Class g_localPlayerClass = Class::Null;
 
+DemoInfo::DemoInfo( const char *path, const char *file, const char *tag, const char *date,
+                    const char *map, const char *blu, const char *red) :
+    fullpath(path),
+    filename(file),
+    tag(tag),
+    date(date),
+    mapname(map),
+    bluteam(blu),
+    redteam(red) {
+}
+
+std::unique_ptr<DemoInfo> g_pDemoInfo(nullptr);
+std::unique_ptr<DemoInfo> g_pPrevDemoInfo(nullptr);;
+
 class PluginImpl: public IServerPluginCallbacks {
     public:
 

@@ -1,6 +1,9 @@
 #ifndef OPENPREC_MAIN_H
 #define OPENPREC_MAIN_H
 
+#include <string>
+#include <memory>
+
 // Source Engine Interfaces
 #include <interface.h>
 #include <eiface.h>
@@ -40,5 +43,22 @@ enum struct Class {
 };
 
 extern Class g_localPlayerClass;
+
+class DemoInfo {
+    public:
+    DemoInfo(   const char *path, const char *file, const char *tag, const char *date,
+                const char *map, const char *blu, const char *red);
+
+    const std::string fullpath;
+    const std::string filename;
+    const std::string tag;
+    const std::string date;
+    const std::string mapname;
+    const std::string bluteam;
+    const std::string redteam;
+};
+
+extern std::unique_ptr<DemoInfo>    g_pDemoInfo,
+                                    g_pPrevDemoInfo;
 
 #endif
