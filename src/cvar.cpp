@@ -248,6 +248,7 @@ CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
     const char *redteam;
     char mapname[256];
     char datetime[256];
+    bool customName = true;
     std::string fallbackname;
     std::string filepath;
     argv[0] = "record";
@@ -269,6 +270,7 @@ CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
     if (strcmp(nextdemoname, "") == 0) {
         // TODO: Read custom format string
         const char *demonamefmt = "%date%_%map%_%red%_%blu%_%tag%";
+        customName = false;
         fallbackname = parse_demoname(demonamefmt, tag, datetime, mapname, bluteam, redteam);
         nextdemoname = fallbackname.c_str();
     }
@@ -277,6 +279,9 @@ CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
     record->Dispatch(CCommand(2, argv));
     if (g_pEngineClient->IsRecordingDemo()) {
         g_demoIsInternal = true;
+        if (customName) {
+            prec_next_demoname.SetValue("");
+        }
 
         // Write demo info
         g_pPrevDemoInfo.swap(g_pDemoInfo);
