@@ -25,6 +25,8 @@ DemoInfo::DemoInfo( const char *path, const char *file, const char *tag, const c
 std::unique_ptr<DemoInfo> g_pDemoInfo(nullptr);
 std::unique_ptr<DemoInfo> g_pPrevDemoInfo(nullptr);;
 
+bool g_demoIsInternal = false;
+
 class PluginImpl: public IServerPluginCallbacks {
     public:
 
@@ -138,9 +140,18 @@ void PluginImpl::LevelInit(char const *pMapName) {
 void PluginImpl::ServerActivate(edict_t *pEdictList, int edictCount, int clientMax) {}
 
 void PluginImpl::GameFrame(bool simulating) {
+    if (simulating && g_demoIsInternal) {
+        g_demoIsInternal = g_pEngineClient->IsRecordingDemo();
+    }
 }
 
 void PluginImpl::LevelShutdown() {
+    if (g_pEngineClient->IsRecordingDemo() && g_demoIsInternal) {
+        ConCommand *stop = g_pCVar->FindCommand("stop");
+        const char *argv[1] = {"stop"};
+        stop->Dispatch(CCommand(1, argv));
+        g_demoIsInternal = false;
+    }
 }
 
 void PluginImpl::OnQueryCvarValueFinished(QueryCvarCookie_t iCookie, edict_t *pPlayerEntity, EQueryCvarValueStatus eStatus, const char *pCvarName, const char *pCvarValue) {}

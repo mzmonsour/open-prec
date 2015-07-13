@@ -261,6 +261,8 @@ CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
     argv[1] = filepath.c_str();
     record->Dispatch(CCommand(2, argv));
     if (g_pEngineClient->IsRecordingDemo()) {
+        g_demoIsInternal = true;
+
         // Write demo info
         g_pPrevDemoInfo.swap(g_pDemoInfo);
         g_pDemoInfo = std::unique_ptr<DemoInfo>(
