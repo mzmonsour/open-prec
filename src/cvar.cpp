@@ -58,13 +58,6 @@ ConVar prec_mode("prec_mode", "2", FCVAR_ARCHIVE,
         "\t2 - Record on servers with mp_tournament 1\n"
         "\t3 - Always record");
 
-enum struct PrecMode {
-    Off,
-    Named,
-    Tournament,
-    Always
-};
-
 ConVar prec_min_streak("prec_min_streak", "4", FCVAR_ARCHIVE,
         "Minimum killstreak to log (unimplemented)",
         true, 2.0, false, 0);

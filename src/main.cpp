@@ -1,6 +1,7 @@
 #include "main.h"
 #include "cvar.h"
 #include "sound.h"
+#include "event.h"
 
 vgui::ISystem*       g_pSystem;
 IVEngineClient*      g_pEngineClient;
@@ -97,6 +98,10 @@ bool PluginImpl::Load(CreateInterfaceFn interfaceFactory, CreateInterfaceFn game
         Msg("Failed to load sound table\n");
         return false;
     }
+    if (!register_eventlisteners()) {
+        Msg("Failed to load event listeners\n");
+        return false;
+    }
     Msg(OPENPREC_NAME " loaded!\n");
     return true;
 }
@@ -104,6 +109,7 @@ bool PluginImpl::Load(CreateInterfaceFn interfaceFactory, CreateInterfaceFn game
 void PluginImpl::Unload() {
     unregister_cvars();
     unregister_concommands();
+    unregister_eventlisteners();
 }
 
 void PluginImpl::Pause() {}

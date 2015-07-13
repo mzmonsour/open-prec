@@ -19,6 +19,16 @@ void unregister_cvars();
 bool register_concommands();
 void unregister_concommands();
 
-extern ConVar prec_sound;
+extern ConVar   prec_sound,
+                prec_mode;
+
+enum struct PrecMode {
+    Off,
+    Named,
+    Tournament,
+    Always
+};
+
+void prec_record(const CCommand& args);
 
 #endif
