@@ -10,6 +10,7 @@ static const char* g_soundTable[3][10] = {
 
 bool load_sound_table() {
     g_soundTable[(int)Sound::About][(int)Class::Null] = "vo/sniper_item_birdhead_kill_scoped02.mp3";
+    g_soundTable[(int)Sound::Recording][(int)Class::Null] = "items/cart_explode_trigger";
     g_soundTable[(int)Sound::Killstreak][(int)Class::Null] = "vo/heavy_generic01.mp3";
     return true;
 }
