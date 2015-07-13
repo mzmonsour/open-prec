@@ -341,6 +341,7 @@ void prec_log_mark(const Mark type, const int tick, const int kills) {
     fullpath = create_file_path(basedir, path.c_str());
     logfile = g_pFileSystem->Open(fullpath.c_str(), "a");
     if (logfile != NULL) {
+        g_pDemoInfo->Mark();
         time(&posixtime);
         timeinfo = localtime(&posixtime);
         datetimelen = strftime(datetime, sizeof(datetime), "[%F %T]: ", timeinfo);

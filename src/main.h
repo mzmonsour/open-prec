@@ -49,6 +49,10 @@ class DemoInfo {
     DemoInfo(   const char *path, const char *file, const char *tag, const char *date,
                 const char *map, const char *blu, const char *red);
 
+    void Mark();
+
+    bool HasMarks() const;
+
     const std::string fullpath;
     const std::string filename;
     const std::string tag;
@@ -56,6 +60,9 @@ class DemoInfo {
     const std::string mapname;
     const std::string bluteam;
     const std::string redteam;
+
+    private:
+    bool hasMarks;
 };
 
 extern std::unique_ptr<DemoInfo>    g_pDemoInfo,

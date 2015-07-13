@@ -19,7 +19,16 @@ DemoInfo::DemoInfo( const char *path, const char *file, const char *tag, const c
     date(date),
     mapname(map),
     bluteam(blu),
-    redteam(red) {
+    redteam(red),
+    hasMarks(false) {
+}
+
+void DemoInfo::Mark() {
+    hasMarks = true;
+}
+
+bool DemoInfo::HasMarks() const {
+    return hasMarks;
 }
 
 std::unique_ptr<DemoInfo> g_pDemoInfo(nullptr);
