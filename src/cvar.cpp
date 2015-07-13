@@ -77,8 +77,8 @@ ConVar prec_sound("prec_sound", "1", FCVAR_ARCHIVE,
         "\t1 - On");
 
 ConVar prec_screens("prec_screens", "0", FCVAR_ARCHIVE,
-        "Take screenshots of score and status (unimplemented)\n"
-        "\t0 - Off"
+        "Take screenshots of score and status\n"
+        "\t0 - Off\n"
         "\t1 - On");
 
 ConVar prec_log("prec_log", "1", FCVAR_ARCHIVE,

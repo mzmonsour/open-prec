@@ -20,7 +20,8 @@ bool register_concommands();
 void unregister_concommands();
 
 extern ConVar   prec_sound,
-                prec_mode;
+                prec_mode,
+                prec_screens;
 
 enum struct PrecMode {
     Off,

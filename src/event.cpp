@@ -50,10 +50,25 @@ class ClassTrackListener: public IGameEventListener2 {
 };
 static ClassTrackListener g_ClassTrackListener;
 
+class GameEndListener: public IGameEventListener2 {
+    public:
+    virtual ~GameEndListener() {}
+    virtual void FireGameEvent(IGameEvent *event) {
+        if (prec_screens.GetInt() == 1
+            && g_demoIsInternal
+            && g_pEngineClient->IsRecordingDemo()) {
+            g_pEngineClient->ClientCmd("+score; screenshot; -score");
+        }
+    }
+};
+static GameEndListener g_GameEndListener;
+
 bool register_eventlisteners() {
     g_pEventManager->AddListener(&g_TournamentStartListener, "teamplay_restart_round", false);
     g_pEventManager->AddListener(&g_PlayerSpawnListener, "localplayer_respawn", false);
     g_pEventManager->AddListener(&g_ClassTrackListener, "player_changeclass", false);
+    g_pEventManager->AddListener(&g_GameEndListener, "teamplay_game_over", false);
+    g_pEventManager->AddListener(&g_GameEndListener, "tf_game_over", false);
     return true;
 }
 
@@ -61,4 +76,5 @@ void unregister_eventlisteners() {
     g_pEventManager->RemoveListener(&g_TournamentStartListener);
     g_pEventManager->RemoveListener(&g_PlayerSpawnListener);
     g_pEventManager->RemoveListener(&g_ClassTrackListener);
+    g_pEventManager->RemoveListener(&g_GameEndListener);
 }
