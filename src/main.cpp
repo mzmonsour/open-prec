@@ -135,6 +135,7 @@ const char *PluginImpl::GetPluginDescription() {
 }
 
 void PluginImpl::LevelInit(char const *pMapName) {
+    g_localPlayerClass = Class::Null;
 }
 
 void PluginImpl::ServerActivate(edict_t *pEdictList, int edictCount, int clientMax) {}
