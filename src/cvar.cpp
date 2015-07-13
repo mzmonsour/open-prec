@@ -204,24 +204,11 @@ std::string create_demo_path(const char *dir, const char *name) {
     return path.str();
 }
 
-#define RECORD_NOTIFICATION "**RECORDING STARTED**"
-CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
-    time_t posixtime;
-    tm *timeinfo;
-    ConCommand *record = g_pCVar->FindCommand("record");
-    int mp_tournament = g_pCVar->FindVar("mp_tournament")->GetInt();
+void prec_auto_record() {
+    if (g_pEngineClient->IsRecordingDemo()) return;
     int mode = prec_mode.GetInt();
-    const char *argv[2];
     const char *nextdemoname = prec_next_demoname.GetString();
-    const char *basedir;
-    const char *tag;
-    const char *bluteam;
-    const char *redteam;
-    char mapname[256];
-    char datetime[256];
-    std::string fallbackname;
-    std::string filepath;
-    argv[0] = "record";
+    int mp_tournament = g_pCVar->FindVar("mp_tournament")->GetInt();
     switch (static_cast<PrecMode>(mode)) {
         case PrecMode::Off: return;
         case PrecMode::Named: {
@@ -236,6 +223,27 @@ CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
             return;
         }
     }
+    prec_record(CCommand(0, nullptr));
+}
+
+#define RECORD_NOTIFICATION "**RECORDING STARTED**"
+CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
+    if (g_pEngineClient->IsRecordingDemo()) return;
+    time_t posixtime;
+    tm *timeinfo;
+    ConCommand *record = g_pCVar->FindCommand("record");
+    int mp_tournament = g_pCVar->FindVar("mp_tournament")->GetInt();
+    const char *argv[2];
+    const char *nextdemoname = prec_next_demoname.GetString();
+    const char *basedir;
+    const char *tag;
+    const char *bluteam;
+    const char *redteam;
+    char mapname[256];
+    char datetime[256];
+    std::string fallbackname;
+    std::string filepath;
+    argv[0] = "record";
     basedir = prec_dir.GetString();
     tag = prec_tag.GetString();
     bluteam = g_pCVar->FindVar("mp_tournament_blueteamname")->GetString();

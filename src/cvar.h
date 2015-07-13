@@ -30,5 +30,6 @@ enum struct PrecMode {
 };
 
 void prec_record(const CCommand& args);
+void prec_auto_record();
 
 #endif

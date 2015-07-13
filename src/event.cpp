@@ -7,7 +7,7 @@ class TournamentStartListener: public IGameEventListener2 {
     virtual void FireGameEvent(IGameEvent *event) {
         if (g_pCVar->FindVar("mp_tournament")->GetInt() != 1) return;
         if (!g_pEngineClient->IsRecordingDemo()) {
-            prec_record(CCommand(0, nullptr));
+            prec_auto_record();
         }
     }
 };
@@ -18,9 +18,7 @@ class PlayerSpawnListener: public IGameEventListener2 {
     virtual ~PlayerSpawnListener() {}
     virtual void FireGameEvent(IGameEvent *event) {
         if (static_cast<PrecMode>(prec_mode.GetInt()) == PrecMode::Always && g_pCVar->FindVar("mp_tournament")->GetInt() != 1) {
-            if (!g_pEngineClient->IsRecordingDemo()) {
-                prec_record(CCommand(0, nullptr));
-            }
+            prec_auto_record();
         }
     }
 };
