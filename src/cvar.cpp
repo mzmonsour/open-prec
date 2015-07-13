@@ -292,6 +292,19 @@ CON_COMMAND(prec_mark, "Make a bookmark at the current tick") {
 }
 
 CON_COMMAND(prec_delete_demo, "Delete previous demo") {
+    std::ostringstream pathbuf;
+    std::string path;
+    if (g_pEngineClient->IsRecordingDemo() && g_demoIsInternal) {
+        if (g_pPrevDemoInfo == nullptr) return;
+        pathbuf << g_pPrevDemoInfo->fullpath;
+    } else {
+        if (g_pDemoInfo == nullptr) return;
+        pathbuf << g_pDemoInfo->fullpath;
+    }
+    pathbuf << ".dem";
+    path = pathbuf.str();
+    ConNotifyf("Deleting demo \"%s\"", path.c_str());
+    g_pFileSystem->RemoveFile(path.c_str());
 }
 
 ConCommand *g_commandList[g_numCommands] = {
