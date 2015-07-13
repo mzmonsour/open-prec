@@ -37,7 +37,7 @@
 static ConVar prec_version("prec_version", OPENPREC_VERSION, FCVAR_NONE,
         "The current version of open-prec");
 
-ConVar prec_next_demoname("prec_next_demoname", "", FCVAR_ARCHIVE,
+ConVar prec_next_demoname("prec_next_demoname", "", FCVAR_NONE,
         "Name of the next demo (unimplemented)");
 
 ConVar prec_notify("prec_notify", "1", FCVAR_ARCHIVE,
