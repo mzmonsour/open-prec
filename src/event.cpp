@@ -5,7 +5,6 @@ class TournamentStartListener: public IGameEventListener2 {
     public:
     virtual ~TournamentStartListener() {}
     virtual void FireGameEvent(IGameEvent *event) {
-        ConNotifyf("%s", "Tournament event triggered");
         if (g_pCVar->FindVar("mp_tournament")->GetInt() != 1) return;
         if (!g_pEngineClient->IsRecordingDemo()) {
             prec_record(CCommand(0, nullptr));
