@@ -68,7 +68,7 @@ ConVar prec_kill_delay("prec_kill_delay", "15", FCVAR_ARCHIVE,
         "Max delay between kills in a killstreak (unimplemented)",
         true, 5.0, false, 0);
 
-ConVar prec_dir("prec_dir", "/home/matt/", FCVAR_ARCHIVE,
+ConVar prec_dir("prec_dir", "", FCVAR_ARCHIVE,
         "Directory to store demos in");
 
 ConVar prec_sound("prec_sound", "1", FCVAR_ARCHIVE,
