@@ -23,7 +23,8 @@ extern ConVar   prec_sound,
                 prec_mode,
                 prec_screens,
                 prec_min_streak,
-                prec_kill_delay;
+                prec_kill_delay,
+                prec_delete_useless_demo;
 
 enum struct PrecMode {
     Off,
@@ -39,6 +40,8 @@ enum struct Mark {
 
 void prec_record(const CCommand& args);
 void prec_auto_record();
+
+void prec_delete_demo(const CCommand& args);
 
 void prec_log_mark(const Mark type, const int tick, const int kills);
 

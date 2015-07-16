@@ -153,6 +153,9 @@ void PluginImpl::ServerActivate(edict_t *pEdictList, int edictCount, int clientM
 void PluginImpl::GameFrame(bool simulating) {
     if (simulating && g_demoIsInternal) {
         g_demoIsInternal = g_pEngineClient->IsRecordingDemo();
+        if (!g_demoIsInternal && !g_pDemoInfo->HasMarks() && prec_delete_useless_demo.GetInt() == 1) {
+            prec_delete_demo(CCommand(0, nullptr));
+        }
     }
 }
 
@@ -163,6 +166,9 @@ void PluginImpl::LevelShutdown() {
         const char *argv[1] = {"stop"};
         stop->Dispatch(CCommand(1, argv));
         g_demoIsInternal = false;
+        if (!g_pDemoInfo->HasMarks() && prec_delete_useless_demo.GetInt() == 1) {
+            prec_delete_demo(CCommand(0, nullptr));
+        }
     }
 }
 

@@ -95,8 +95,8 @@ enum struct LogMode {
 };
 
 ConVar prec_delete_useless_demo("prec_delete_useless_demo", "0", FCVAR_ARCHIVE,
-        "Delete demo files without killstreaks or bookmarks (unimplemented)\n"
-        "\t0 - Off \n"
+        "Delete demo files without killstreaks or bookmarks\n"
+        "\t0 - Off\n"
         "\t1 - On");
 
 ConVar prec_stv_status("prec_stv_status", "0", FCVAR_ARCHIVE,
@@ -379,7 +379,7 @@ CON_COMMAND(prec_mark, "Make a bookmark at the current tick") {
     }
 }
 
-CON_COMMAND(prec_delete_demo, "Delete previous demo") {
+CON_COMMAND_EXTERN(prec_delete_demo, prec_delete_demo, "Delete previous demo") {
     std::ostringstream pathbuf;
     std::string path;
     if (g_pEngineClient->IsRecordingDemo() && g_demoIsInternal) {
