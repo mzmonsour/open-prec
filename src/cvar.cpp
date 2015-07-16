@@ -385,9 +385,12 @@ CON_COMMAND_EXTERN(prec_delete_demo, prec_delete_demo, "Delete previous demo") {
     if (g_pEngineClient->IsRecordingDemo() && g_demoIsInternal) {
         if (g_pPrevDemoInfo == nullptr) return;
         pathbuf << g_pPrevDemoInfo->fullpath;
+        g_pPrevDemoInfo.reset(nullptr);
     } else {
         if (g_pDemoInfo == nullptr) return;
         pathbuf << g_pDemoInfo->fullpath;
+        g_pDemoInfo.reset(nullptr);
+        g_pDemoInfo.swap(g_pPrevDemoInfo);
     }
     pathbuf << ".dem";
     path = pathbuf.str();
