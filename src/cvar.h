@@ -19,6 +19,8 @@ void unregister_cvars();
 bool register_concommands();
 void unregister_concommands();
 
+bool load_demo_formats(KeyValues *cfg);
+
 extern ConVar   prec_sound,
                 prec_mode,
                 prec_screens,

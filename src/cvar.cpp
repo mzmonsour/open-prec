@@ -199,11 +199,6 @@ std::string parse_demoname( const char *fmt, const char *tag, const char *date,
     return demoname.str();
 }
 
-#ifdef _WIN32
-#define PATH_SEPARATOR '\\'
-#else
-#define PATH_SEPARATOR '/'
-#endif
 std::string create_file_path(const char *dir, const char *name) {
     std::ostringstream path;
     // Don't worry about multiple separators, most systems will happily ignore them
@@ -234,6 +229,7 @@ void prec_auto_record() {
 }
 
 #define RECORD_NOTIFICATION "**RECORDING STARTED**"
+static std::string demoname_fmt, demotime_fmt;
 CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
     if (g_pEngineClient->IsRecordingDemo()) return;
     time_t posixtime;
@@ -258,7 +254,7 @@ CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
     redteam = g_pCVar->FindVar("mp_tournament_redteamname")->GetString();
     time(&posixtime);
     timeinfo = localtime(&posixtime);
-    strftime(datetime, sizeof(datetime), "%F", timeinfo);
+    strftime(datetime, sizeof(datetime), demotime_fmt.c_str(), timeinfo);
     datetime[sizeof(datetime) - 1] = 0;
     g_pEngineClient->GetChapterName(mapname, sizeof(mapname));
     for (int i = 0; i < sizeof(mapname); ++i) {
@@ -269,9 +265,8 @@ CON_COMMAND_EXTERN(prec_record, prec_record, "Record a demo") {
     }
     if (strcmp(nextdemoname, "") == 0) {
         // TODO: Read custom format string
-        const char *demonamefmt = "%date%_%map%_%red%_%blu%_%tag%";
         customName = false;
-        fallbackname = parse_demoname(demonamefmt, tag, datetime, mapname, bluteam, redteam);
+        fallbackname = parse_demoname(demoname_fmt.c_str(), tag, datetime, mapname, bluteam, redteam);
         nextdemoname = fallbackname.c_str();
     }
     filepath = create_file_path(basedir, nextdemoname);
@@ -430,4 +425,23 @@ void unregister_concommands() {
     for (int i = 0; i < g_numCommands; ++i) {
         g_pCVar->UnregisterConCommand(g_commandList[i]);
     }
+}
+
+bool load_demo_formats(KeyValues *cfg) {
+    KeyValues* kv_settings = cfg->FindKey("Settings");
+    demotime_fmt = std::string("%F");
+    demoname_fmt = std::string("%date%_%map%_%red%_%blu%%tag%");
+    if (kv_settings == nullptr) {
+        ConNotifyf("%s", "Warning: Config may be missing or invalid");
+        return true;
+    }
+    const char *cfg_time = kv_settings->GetString("DemoTime_format");
+    const char *cfg_name = kv_settings->GetString("DemoName_format");
+    if (strcmp(cfg_time, "") != 0) {
+        demotime_fmt = std::string(cfg_time);
+    }
+    if (strcmp(cfg_name, "") != 0) {
+        demoname_fmt = std::string(cfg_name);
+    }
+    return true;
 }

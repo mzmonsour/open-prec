@@ -127,6 +127,17 @@ bool PluginImpl::Load(CreateInterfaceFn interfaceFactory, CreateInterfaceFn game
         Msg("Failed to load event listeners\n");
         return false;
     }
+    KeyValues *cfg;
+    const char *cfg_path = "addons" PATH_SEP_STR "prec.cfg";
+    if ((cfg = g_pFileSystem->LoadKeyValues(IFileSystem::TYPE_VMT, cfg_path)) == nullptr) {
+        Msg("Failed to load prec.cfg\n");
+        return false;
+    }
+    if (!load_demo_formats(cfg)) {
+        Msg("Failed to load demo formatting options\n");
+        return false;
+    }
+    cfg->deleteThis();
     Msg(OPENPREC_NAME " loaded!\n");
     return true;
 }

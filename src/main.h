@@ -22,6 +22,15 @@
 
 #define OPENPREC_NOFEATURE_MSGF "Feature '%s' has not been implemented"
 
+// Some utility stuff
+#ifdef _WIN32
+#define PATH_SEPARATOR  '\\'
+#define PATH_SEP_STR    "\\"
+#else
+#define PATH_SEPARATOR  '/'
+#define PATH_SEP_STR    "/"
+#endif
+
 // Engine Interfaces
 extern vgui::ISystem*       g_pSystem;
 extern IVEngineClient*      g_pEngineClient;
