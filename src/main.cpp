@@ -7,7 +7,6 @@ vgui::ISystem*       g_pSystem;
 IVEngineClient*      g_pEngineClient;
 IGameEventManager2*  g_pEventManager;
 IFileSystem*         g_pFileSystem;
-ICvar*               g_pCVar;
 
 Class g_localPlayerClass = Class::Null;
 
