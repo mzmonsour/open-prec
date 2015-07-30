@@ -4,3 +4,11 @@
 
 # Vim swapfiles
 .*.swp
+
+# Visual Studio files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.sdf
+*.opensdf
