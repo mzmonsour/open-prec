@@ -1,6 +1,7 @@
 #include <icvar.h>
 #include <string>
 #include <sstream>
+#include <ctime>
 #include "main.h"
 #include "cvar.h"
 #include "sound.h"
