@@ -1,3 +1,9 @@
+# Project Discontinued, Please Read
+
+As Team Fortress 2 now fully supports cross platform automatic demo recording and organization,
+Open-PREC is no longer necessary to use. The source will be left available as an example source
+plugin, but I will no longer continue development, nor attempt to have the plugin officially signed.
+
 # Open-PREC
 
 Record demos in Team Fortress 2 automatically
